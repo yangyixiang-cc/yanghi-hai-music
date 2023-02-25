@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yanghi.haimusic.mapper.SongSheetAndSongMapper">
+    <!--根据歌单id返回所有歌单中包含的歌曲-->
+    <!--List<Song> returnSongSheetIncludeSongs(@Param("id") Integer id);-->
+    <select id="selectSongPageBySongSheetId" resultType="Song">
+        select id,name,introduction,pic,singer_name,url from song where id in
+                                                                    (select song_id from song_sheet_and_song  where song_sheet_id = ${id})
+    </select>
+</mapper>
