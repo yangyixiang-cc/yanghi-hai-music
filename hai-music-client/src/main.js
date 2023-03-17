@@ -9,7 +9,7 @@ axios.defaults.baseURL = "http://localhost:8080/api";
 import store from './store/index'
 // 导入vue-router
 import VueRouter from 'vue-router'
-import router from './router/router'
+import router from './router'
 Vue.use(VueRouter)
 
 // 引入font-awesome
