@@ -134,6 +134,10 @@
 <script>
 import HaiSongsRanking from "../components/main/HaiSongsRanking.vue";
 import HaiAd from "../components/common/HaiAd.vue";
+import Song from "@/api/Song";
+import SongSheet from "@/api/SongSheet";
+import Singer from "@/api/Singer";
+import Video from "@/api/Video";
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: "Main",
@@ -209,52 +213,40 @@ export default {
       }
     },
     //获取推荐歌单信息
-    obtainSongSheetInfo() {
-      this.axios.get("/song_sheet/recommend").then((response) => {
-        if (response.data.code == 1) {
-          this.gdList = response.data.data;
-        }
-      });
+    async obtainSongSheetInfo() {
+      const {data: res} = await SongSheet.getRandomRecommendSongSheets();
+      if(res.code == 1){
+        this.gdList = res.data;
+      }
     },
     //获取推荐歌手列表
-    obtainSingerListInfo() {
-      this.axios.get("/singer/recommend").then((response) => {
-        if (response.data.code == 1) {
-          this.recommendSingerList = response.data.data;
-        }
-      });
+    async obtainSingerListInfo() {
+      const {data: res} = await Singer.getRandomRecommendSingers();
+      if(res.code == 1){
+        this.recommendSingerList = res.data;
+      }
     },
     //获取推荐歌曲列表
-    obtainSongListInfo() {
-      this.axios.get("/song/recommend").then((response) => {
-        if (response.data.code == 1) {
-          this.recommendSongList = response.data.data;
-        }
-      });
+    async obtainSongListInfo() {
+      const {data: res} = await Song.getRandomRecommendSongs();
+      if(res.code == 1){
+        this.recommendSongList = res.data;
+      }
     },
     //获取推荐MV列表
-    obtainMvListInfo() {
-      this.axios.get("/video/recommend").then((response) => {
-        if (response.data.code == 1) {
-          this.mvList = response.data.data;
-        }
-      });
+    async obtainMvListInfo() {
+      const {data: res} = await Video.getRandomRecommendVideos();
+      if(res.code == 1){
+        this.mvList = res.data;
+      }
+
     },
     //获取歌曲排行榜 只展示前4条
-    obtainRankingList(style = "", region = "") {
-      this.axios
-        .get("/song/song_rankings", {
-          params: {
-            num: 4,
-            region: region,
-            style: style,
-          },
-        })
-        .then((res) => {
-          if (res.data.code == 1) {
-            this.songRankingList.push(res.data.data.records);
-          }
-        });
+    async obtainRankingList(style = "", region = "") {
+      const {data: res} = await Song.getSongRankings(4, region, style);
+      if (res.code == 1) {
+            this.songRankingList.push(res.data.records);
+      }
     },
     obtainSongRankingList() {
       this.obtainRankingList();

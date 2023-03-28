@@ -141,7 +141,6 @@ export default {
       this.isSearch = true;
     },
     closeSearch() {
-      console.log(231123123123);
       this.isSearch = false;
       this.keyword = "";
     },

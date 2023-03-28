@@ -3,58 +3,31 @@
     <div class="box">
       <div class="header">
         <div>
-          <span>区域</span
-          ><a
-            :class="regionIndex == -1 ? 'tab-active' : ''"
-            @click.prevent="changeNav('region', -1)"
-            >全部</a
-          >
-          <a
-            v-for="(item, index) in mvNav.region"
-            :key="index"
-            @click.prevent="changeNav('region', index)"
-            :class="regionIndex == index ? 'tab-active' : ''"
-            >{{ item }}</a
-          >
+          <span>区域</span><a :class="regionIndex == -1 ? 'tab-active' : ''" @click.prevent="changeNav('region', -1)">全部</a>
+          <a v-for="(item, index) in mvNav.region" :key="index" @click.prevent="changeNav('region', index)"
+            :class="regionIndex == index ? 'tab-active' : ''">{{ item }}</a>
         </div>
         <div>
-          <span>版本</span
-          ><a
-            :class="editionIndex == -1 ? 'tab-active' : ''"
-            @click.prevent="changeNav('edition', -1)"
-            >全部</a
-          >
-          <a
-            v-for="(item, index) in mvNav.edition"
-            :key="index"
-            @click.prevent="changeNav('edition', index)"
-            :class="editionIndex == index ? 'tab-active' : ''"
-            >{{ item }}</a
-          >
+          <span>版本</span><a :class="editionIndex == -1 ? 'tab-active' : ''"
+            @click.prevent="changeNav('edition', -1)">全部</a>
+          <a v-for="(item, index) in mvNav.edition" :key="index" @click.prevent="changeNav('edition', index)"
+            :class="editionIndex == index ? 'tab-active' : ''">{{ item }}</a>
         </div>
       </div>
       <div class="context_header">
         <div class="left">{{ headerText }}</div>
         <div class="right">
-          <button
-            :class="tabIndex == 1 ? 'tab-active' : ''"
-            @click.prevent="changePx(1)"
-          >
+          <button :class="tabIndex == 1 ? 'tab-active' : ''" @click.prevent="changePx(1)">
             热门
           </button>
-          <button
-            :class="tabIndex == 2 ? 'tab-active' : ''"
-            @click.prevent="changePx(2)"
-          >
+          <button :class="tabIndex == 2 ? 'tab-active' : ''" @click.prevent="changePx(2)">
             最新
           </button>
         </div>
       </div>
       <div class="context">
         <div v-for="item in filterMvList" :key="item.id">
-          <a @click="goVideoDetail(item.id)"
-            ><img :src="item.pic" alt="mv"
-          /></a>
+          <a @click="goVideoDetail(item.id)"><img :src="item.pic" alt="mv" /></a>
           <div class="bot">
             <div class="title">
               <a @click="goVideoDetail(item.id)">{{ item.title }}</a>
@@ -72,16 +45,14 @@
           本栏目暂时还没有MV
         </div>
       </div>
-      <hai-drop-down-loading
-        @click.native="obtainVideoPageInfoNext"
-        v-show="filterMvList.length != 0"
-      />
+      <hai-drop-down-loading @click.native="obtainVideoPageInfoNext" v-show="filterMvList.length != 0" />
     </div>
   </div>
 </template>
 
 <script>
 import HaiDropDownLoading from "@/components/common/HaiDropDownLoading.vue";
+import Video from "@/api/Video";
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: "MvList",
@@ -111,24 +82,14 @@ export default {
         },
       });
     },
-    obtainVideoPageInfo(pageNum = 1, region = "", edition = "") {
-      this.axios
-        .get("/video/page", {
-          params: {
-            pageNum: pageNum,
-            num: 16,
-            region: region,
-            edition: edition,
-          },
-        })
-        .then((response) => {
-          if (response.data.code == 1) {
-            this.current = response.data.data.current;
-            this.pages = response.data.data.pages;
-            this.mvList = [...this.mvList, ...response.data.data.records];
-            this.filterMvList = this.mvList;
-          }
-        });
+    async obtainVideoPageInfo(pageNum = 1, region = "", edition = "") {
+      const { data: res } = await Video.getVideoPage(pageNum, 16, region, edition);
+      if (res.code == 1) {
+        this.current = res.data.current;
+        this.pages = res.data.pages;
+        this.mvList = [...this.mvList, ...res.data.records];
+        this.filterMvList = this.mvList;
+      }
     },
     changePx(tabIndex) {
       this.tabIndex = tabIndex;
@@ -201,6 +162,7 @@ export default {
   margin: auto;
   padding-top: 0.625rem;
   padding-bottom: 0.375rem;
+
   .header {
     width: 98%;
     height: 3rem;
@@ -208,10 +170,12 @@ export default {
     border-radius: 0.1rem;
     background-color: white;
     padding-top: 0.375rem;
+
     div {
       width: 100%;
       height: 1rem;
       line-height: 1rem;
+
       span {
         display: inline-block;
         width: 1rem;
@@ -225,6 +189,7 @@ export default {
         font-weight: bolder;
         color: #000;
       }
+
       a {
         display: inline-block;
         width: 1rem;
@@ -238,12 +203,14 @@ export default {
         margin: auto 0.0625rem auto 0.0625rem;
         border-radius: 0.05rem;
       }
+
       a:hover {
         color: #000;
         background-color: #e35555;
       }
     }
   }
+
   .context_header {
     width: 98%;
     height: 0.5rem;
@@ -251,12 +218,14 @@ export default {
     margin-top: 1.25rem;
     display: flex;
     justify-content: space-between;
+
     .left {
       font-size: 0.4rem;
       padding-left: 0.125rem;
       font-weight: bold;
       color: #000;
     }
+
     .right {
       button {
         width: 1rem;
@@ -271,6 +240,7 @@ export default {
       }
     }
   }
+
   .context {
     display: flex;
     flex-wrap: wrap;
@@ -284,24 +254,30 @@ export default {
     padding: 0.125rem;
     padding-left: 0.175rem;
     padding-top: 0.25rem;
+
     div {
       width: 5.75rem;
       margin: 0.125rem;
       overflow: hidden;
+
       a {
         transition: all 0.3s ease-in;
       }
+
       a:hover {
         opacity: 0.8;
       }
+
       img {
         width: 100%;
         height: 3rem;
         border-radius: 0.05rem;
       }
+
       .bot {
         margin-left: 0.05rem;
         margin-top: 0.05rem;
+
         .title {
           font-weight: bold;
           overflow: hidden;
@@ -312,6 +288,7 @@ export default {
     }
   }
 }
+
 .tab-active {
   background-color: #e35555 !important;
 }

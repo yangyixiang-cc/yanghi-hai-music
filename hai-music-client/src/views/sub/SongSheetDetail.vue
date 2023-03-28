@@ -55,6 +55,8 @@ import SongList from "@/components/common/SongList.vue";
 import HaiAd from "@/components/common/HaiAd.vue";
 import Comment from "@/components/common/Comment.vue";
 import { mapState, mapMutations } from "vuex";
+import SongSheet from "@/api/SongSheet";
+import User from "@/api/User";
 export default {
   components: { SongList, HaiAd, Comment },
   name: "SongSheetDetail",
@@ -88,7 +90,7 @@ export default {
     }),
     //根据id获取歌单信息
     async obtainSongSheetInfo() {
-      const { data: res } = await this.axios.get("/song_sheet/" + this.id);
+      const { data: res } = await SongSheet.getSongSheetById(this.id);
       if (res.code == 1) {
         this.songSheetInfo = res.data;
         this.style = res.data.style;
@@ -97,7 +99,7 @@ export default {
     },
     //根据歌单信息中的userId获取创建歌单的用户信息
     async obtainUserInfo() {
-      const { data: res } = await this.axios.get("/user/" + this.userId);
+      const { data: res } = await User.getUserById(this.userId);
       if (res.code == 1) {
         this.userInfo = res.data;
       }
@@ -105,13 +107,7 @@ export default {
     //根据歌单id获取对应的歌曲分页数据
     async obtainSongsPage(args) {
       let pageNum = args.pageNum;
-      const { data: res } = await this.axios.get("/song_sheet/songs", {
-        params: {
-          id: this.id,
-          pageNum: pageNum,
-          num: 6,
-        },
-      });
+      const { data: res } = await SongSheet.getSongPageBySongSheetId(this.id, pageNum, 6);
       if (res.code == 1) {
         this.songsPageInfo = res.data;
       }
@@ -122,13 +118,7 @@ export default {
       let flog = args.flog;
       if (pageNum != -1 && this.requestNum.indexOf(pageNum) == -1 && !flog) {
         this.requestNum.push(pageNum);
-        const { data: res } = await this.axios.get("/song_sheet/comments", {
-          params: {
-            id: this.id,
-            pageNum: pageNum,
-            num: 5,
-          },
-        });
+        const { data: res } = await SongSheet.getCommentsPageBySongSheetId(this.id, pageNum, 5);
         if (res.code == 1) {
           if (this.commentsPageInfo.length == 0) {
             this.commentsPageInfo = res.data;
@@ -153,13 +143,7 @@ export default {
           size: obj.size,
         });
       } else if (pageNum == -1 && flog) {
-        const { data: res } = await this.axios.get("/song_sheet/comments", {
-          params: {
-            id: this.id,
-            pageNum: 1,
-            num: 5,
-          },
-        });
+        const { data: res } = await SongSheet.getCommentsPageBySongSheetId(this.id, 1, 5);
         if (res.code == 1) {
           this.commentsPageInfo = res.data;
           this.requestNum = [];
@@ -171,15 +155,7 @@ export default {
       this.updateFlog(true);
     },
     async obtainSimarSongSheet() {
-      const { data: res } = await this.axios.get(
-        "/song_sheet/recommend/style",
-        {
-          params: {
-            num: 3,
-            style: this.style,
-          },
-        }
-      );
+      const { data: res } = await SongSheet.getRecommendSongSheetByStyle(3, this.style);
       if (res.code == 1) {
         this.cardList = res.data;
       }

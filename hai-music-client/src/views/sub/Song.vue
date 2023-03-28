@@ -52,6 +52,9 @@
 import Comment from "@/components/common/Comment.vue";
 import HaiList from "@/components/common/HaiList.vue";
 import { mapState, mapMutations } from "vuex";
+import Song from '@/api/Song';
+import Video from "@/api/Video";
+import SongSheet from "@/api/SongSheet";
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: "Song",
@@ -98,11 +101,7 @@ export default {
     //根据id获取歌曲信息
     async obtainSongInfo() {
       var patt = /(\[.*\])/g;
-      const { data: songInfo } = await this.axios.get("/song/songInfo", {
-        params: {
-          id: this.songId,
-        },
-      });
+      const { data: songInfo } = await Song.getSongById(this.songId);
       if (songInfo.code == 1) {
         songInfo.data.lyric = songInfo.data.lyric
           .replace(patt, "<br><br>")
@@ -115,26 +114,13 @@ export default {
       let temp = ["粤语","乐器","日韩","轻音乐","华语"];
       let index = parseInt(Math.random(temp.length-1));
       let style = temp[index];
-      const { data: res } = await this.axios.get(
-        "/song_sheet/recommend/style",
-        {
-          params: {
-            num: 2,
-            style: style,
-          },
-        }
-      );
+      const { data: res } = await SongSheet.getRecommendSongSheetByStyle(2, style);
       if (res.code == 1) {
         this.recommendSongSheetList = res.data;
       }
     },
     async obtainRecommendMV() {
-      const { data: res } = await this.axios.get("/video/recommend/style", {
-        params: {
-          num: 2,
-          style: "现代",
-        },
-      });
+      const { data: res } = await Video.getRecommendVideosByStyle(2, "现代");
       if (res.code == 1) {
         this.recommendMvList = res.data;
       }
@@ -145,13 +131,7 @@ export default {
       let flog = args.flog;
       if (pageNum != -1 && this.requestNum.indexOf(pageNum) == -1 && !flog) {
         this.requestNum.push(pageNum);
-        const { data: res } = await this.axios.get("/song/comments", {
-          params: {
-            id: this.songId,
-            pageNum: pageNum,
-            num: 5,
-          },
-        });
+        const { data: res } = await Song.getCommentsBySongId(this.songId, pageNum, 5);
         if (res.code == 1) {
           if (this.commentsPageInfo.length == 0) {
             this.commentsPageInfo = res.data;
@@ -176,13 +156,7 @@ export default {
           size: obj.size,
         });
       } else if (pageNum == -1 && flog) {
-        const { data: res } = await this.axios.get("/song/comments", {
-          params: {
-            id: this.songId,
-            pageNum: 1,
-            num: 5,
-          },
-        });
+        const { data: res } = await Song.getCommentsBySongId(this.songId, 1, 5);
         if (res.code == 1) {
           this.commentsPageInfo = res.data;
           this.requestNum = [];

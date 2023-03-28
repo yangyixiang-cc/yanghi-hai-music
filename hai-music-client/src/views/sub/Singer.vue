@@ -76,6 +76,9 @@
 import SongList from "@/components/common/SongList.vue";
 import HaiAd from "@/components/common/HaiAd.vue";
 import { mapState, mapMutations } from "vuex";
+import Singer from "@/api/Singer";
+import Song from "@/api/Song";
+import Video from "@/api/Video";
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: "Singer",
@@ -107,7 +110,7 @@ export default {
     }),
     //根据歌手id获取歌手信息
     async obtainSingerInfo() {
-      const { data: res } = await this.axios.get("/singer/" + this.singerId);
+      const { data: res } = await Singer.getSingerById(this.singerId);  
       if (res.code == 1) {
         this.singerInfo = res.data;
         this.location = res.data.location;
@@ -116,41 +119,22 @@ export default {
     //根据歌单id获取对应的歌曲分页数据
     async obtainSongsPage(args) {
       let pageNum = args.pageNum;
-      const { data: res } = await this.axios.get("/song/songs", {
-        params: {
-          id: this.singerId,
-          pageNum: pageNum,
-          num: 6,
-        },
-      });
+      const { data: res } = await Song.getSongPageBySingerId(this.singerId, pageNum, 6);
       if (res.code == 1) {
         this.songsPageInfo = res.data;
       }
     },
     async obtainRecommendMV() {
-      const { data: res } = await this.axios.get("/video/recommend/style", {
-        params: {
-          num: 8,
-          style: "",
-        },
-      });
+      const { data: res } = await Video.getRecommendVideosByStyle(8, "");
       if (res.code == 1) {
         this.mvList = res.data;
       }
     },
-    obtainSlimarSingerList() {
-      this.axios
-        .get("/singer/silmar_singer", {
-          params: {
-            num: 6,
-            location: this.location
-          },
-        })
-        .then((res) => {
-          if (res.data.code == 1) {
-            this.silmarList = res.data.data;
-          }
-        });
+    async obtainSlimarSingerList() {
+      const {data: res} = await Singer.getSimilarSingers(6, this.location);
+      if(res.code == 1){
+        this.silmarList = res.data;
+      }
     },
     playMusic() {
       this.updateHistorySongs(this.songsPageInfo.records[0]);

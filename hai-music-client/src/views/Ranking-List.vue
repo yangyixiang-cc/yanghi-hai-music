@@ -7,12 +7,8 @@
           <div class="header" v-text="ranking.name"></div>
           <div class="bot">
             <ul>
-              <li
-                v-for="(item, index) in ranking.list"
-                :key="index"
-                @click="goChangeNav(i, index)"
-                :class="fIndex == i && sIndex == index ? 'tab-active' : ''"
-              >
+              <li v-for="(item, index) in ranking.list" :key="index" @click="goChangeNav(i, index)"
+                :class="fIndex == i && sIndex == index ? 'tab-active' : ''">
                 <a>{{ item }}</a>
               </li>
             </ul>
@@ -22,8 +18,7 @@
       <div class="right">
         <div class="header">
           <div class="top">
-            <span id="name">{{ title }}</span
-            ><span id="time">{{
+            <span id="name">{{ title }}</span><span id="time">{{
               new Date() | timeFormat((str = "YYYY-MM-DD"))
             }}</span>
           </div>
@@ -33,21 +28,14 @@
           </div>
         </div>
         <!-- 歌曲列表 -->
-        <SongsList
-          :songsPageInfo="songsPageInfo"
-          :flog="true"
-          v-show="
-            rankings[fIndex].name != 'MV榜' &&
-            rankings[fIndex].list[sIndex] != 'MV榜'
-          "
-        ></SongsList>
-        <div
-          class="mv-list"
-          v-show="
-            rankings[fIndex].name == 'MV榜' ||
-            rankings[fIndex].list[sIndex] == 'MV榜'
-          "
-        >
+        <SongsList :songsPageInfo="songsPageInfo" :flog="true" v-show="
+          rankings[fIndex].name != 'MV榜' &&
+          rankings[fIndex].list[sIndex] != 'MV榜'
+        "></SongsList>
+        <div class="mv-list" v-show="
+          rankings[fIndex].name == 'MV榜' ||
+          rankings[fIndex].list[sIndex] == 'MV榜'
+        ">
           <div class="card head">
             <div class="left"></div>
             <div class="pic">MV</div>
@@ -84,6 +72,8 @@
 <script>
 import { mapMutations } from "vuex";
 import SongsList from "../components/common/SongList.vue";
+import Song from "@/api/Song";
+import Video from "@/api/Video";
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: "RankingList",
@@ -141,34 +131,17 @@ export default {
         },
       });
     },
-    obtainRankingList(style = "", region = "") {
-      this.axios
-        .get("/song/song_rankings", {
-          params: {
-            num: 20,
-            region: region,
-            style: style,
-          },
-        })
-        .then((response) => {
-          if (response.data.code == 1) {
-            this.songsPageInfo = response.data.data;
-          }
-        });
+    async obtainRankingList(style = "", region = "") {
+      const { data: res } = await Song.getSongRankings(20, region, style);
+      if (res.code == 1) {
+        this.songsPageInfo = res.data;
+      }
     },
-    obtainVideoRanking(region = "") {
-      this.axios
-        .get("/video/video_rankings", {
-          params: {
-            num: 12,
-            region: region,
-          },
-        })
-        .then((response) => {
-          if (response.data.code == 1) {
-            this.videoList = response.data.data;
-          }
-        });
+    async obtainVideoRanking(region = "") {
+      const { data: res } = await Video.getVideoRankings(12, region);
+      if (res.code == 1) {
+        this.videoList = res.data;
+      }
     },
     goChangeNav(i, index) {
       this.songsPageInfo = {};
@@ -233,13 +206,16 @@ export default {
   width: 98%;
   background-color: #f9f9f9;
   margin: auto;
+
   .left {
     flex: 2;
     border-right: 0.0125rem solid #c20c0c;
     padding-bottom: 0.625rem;
+
     .ranking {
       width: 100%;
       height: auto;
+
       .header {
         width: 95%;
         height: 0.75rem;
@@ -251,11 +227,13 @@ export default {
         margin-top: 0.25rem;
         border-bottom: 0.0125rem solid #c20c0c;
       }
+
       .bot {
         ul {
           width: 95%;
           margin: auto;
           margin-top: 0.25rem;
+
           li {
             width: 100%;
             height: 0.625rem;
@@ -264,6 +242,7 @@ export default {
             text-align: center;
             border-radius: 0.05rem;
           }
+
           li:hover {
             background-color: white;
           }
@@ -271,29 +250,35 @@ export default {
       }
     }
   }
+
   .right {
     flex: 8;
     width: 97%;
     padding-bottom: 0.625rem;
+
     .header .top {
       width: 100%;
       padding-left: 0.25rem;
       height: 1.5rem;
       line-height: 1.5rem;
+
       #name {
         font-weight: bolder;
         font-size: 0.45rem;
         color: #000;
       }
+
       #time {
         margin-left: 0.5rem;
       }
     }
+
     .header .bot {
       width: 100%;
       padding-left: 0.25rem;
       margin-top: 0.375rem;
       margin-bottom: 0.25rem;
+
       a {
         display: inline-block;
         width: 1.5rem;
@@ -309,9 +294,11 @@ export default {
         margin-right: 0.25rem;
         color: #000;
       }
+
       a:first-child {
         background-color: #e35555;
       }
+
       a:hover {
         color: #000;
         background-color: #e35555;
@@ -322,6 +309,7 @@ export default {
       margin-left: 0.125rem;
       background: white;
       padding-bottom: 0.25rem;
+
       .head {
         font-size: 0.3rem;
         font-weight: bolder;
@@ -329,12 +317,14 @@ export default {
         margin-bottom: 0.25rem;
         border-bottom: 0.0125rem solid #c20c0c;
       }
+
       .card {
         display: flex;
         width: 100%;
         height: 1.5rem;
         line-height: 1.5rem;
         overflow: hidden;
+
         .left {
           flex: 1;
           text-align: center;
@@ -350,12 +340,14 @@ export default {
           overflow: hidden;
           transition: all 0.3s ease-in;
           cursor: pointer;
+
           img {
             width: 80%;
             height: 1.25rem;
             border-radius: 0.05rem;
           }
         }
+
         .pic:hover {
           opacity: 0.8;
         }
@@ -363,10 +355,12 @@ export default {
         .middle {
           flex: 5;
           height: 1.5rem;
+
           p {
             height: 0.75rem;
             line-height: 0.75rem;
           }
+
           .title {
             font-weight: bold;
             overflow: hidden;
@@ -374,9 +368,11 @@ export default {
             text-overflow: ellipsis;
           }
         }
+
         .right {
           flex: 2;
           display: flex;
+
           a {
             display: block;
             width: 50%;
@@ -386,18 +382,22 @@ export default {
           }
         }
       }
+
       .card:nth-child(odd) {
         background-color: #fbfbfd;
       }
+
       .card:hover {
         background-color: #f7e8e9;
       }
+
       .card:first-child:hover {
         background-color: white;
       }
     }
   }
 }
+
 .tab-active {
   background-color: white;
 }

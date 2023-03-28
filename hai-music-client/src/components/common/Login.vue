@@ -2,14 +2,8 @@
   <div class="login" id="login">
     <div id="title" class="login-title">
       {{ header }}
-      <span
-        ><a
-          id="closeBtn"
-          class="close-login fa fa-close"
-          @click.prevent="closeLogin"
-        >
-        </a
-      ></span>
+      <span><a id="closeBtn" class="close-login fa fa-close" @click.prevent="closeLogin">
+        </a></span>
     </div>
     <!-- <div class="sm_header">扫 码 登 录</div>
     <div class="left">
@@ -23,36 +17,18 @@
       <form action="#">
         <div class="login-input">
           <label for="info[username]">用户名：</label>
-          <input
-            type="text"
-            placeholder="请输入用户名"
-            name="info[username]"
-            id="username"
-            class="input"
-            v-model.lazy="user.username"
-          />
+          <input type="text" placeholder="请输入用户名" name="info[username]" id="username" class="input"
+            v-model.lazy="user.username" />
         </div>
         <div class="login-input" v-show="flog">
           <label for="info[nickname]">用户昵称：</label>
-          <input
-            type="text"
-            placeholder="请输入昵称"
-            name="info[nickname]"
-            id="nickname"
-            class="input"
-            v-model.lazy="user.nickName"
-          />
+          <input type="text" placeholder="请输入昵称" name="info[nickname]" id="nickname" class="input"
+            v-model.lazy="user.nickName" />
         </div>
         <div class="login-input">
           <label for="info[password]">登录密码：</label>
-          <input
-            type="password"
-            placeholder="请输入登录密码"
-            name="info[password]"
-            id="password"
-            class="input"
-            v-model.lazy="user.password"
-          />
+          <input type="password" placeholder="请输入登录密码" name="info[password]" id="password" class="input"
+            v-model.lazy="user.password" />
         </div>
       </form>
     </div>
@@ -71,6 +47,7 @@
 <script>
 import qs from "qs";
 import { mapMutations } from "vuex";
+import User from "@/api/User";
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: "Login",
@@ -93,33 +70,27 @@ export default {
     closeLogin() {
       this.$bus.$emit("changeClose");
     },
-    toLogin() {
+    async toLogin() {
       if (this.user.username == "" || this.user.password == "") {
         this.msg = "请输入用户名或密码！";
       } else {
-        this.axios
-          .post(
-            "/user/login",
-            qs.stringify({
-              username: this.user.username,
-              password: this.user.password,
-            })
-          )
-          .then((response) => {
-            if (response.data.code == -1) {
-              this.msg = response.data.msg;
-            } else {
-              this.saveUser(response.data.data);
-              this.closeLogin();
-              this.msg = "";
-            }
-            this.user.username = "";
-            this.user.password = "";
-          });
+        const { data: res } = await User.login(qs.stringify({
+          username: this.user.username,
+          password: this.user.password
+        }));
+        if (res.code == -1) {
+          this.msg = res.msg;
+        } else {
+          this.saveUser(res.data);
+          this.closeLogin();
+          this.msg = "";
+        }
+        this.user.username = "";
+        this.user.password = "";
       }
       this.msg = "";
     },
-    toRegister() {
+    async toRegister() {
       let prep = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,18}$/;
       let uprep = /^[A-Za-z]{5,18}$/;
       let nrep = /^[\u4e00-\u9fa5]{4,8}$/;
@@ -163,29 +134,23 @@ export default {
         }, 500);
         return;
       }
-      this.axios
-        .post(
-          "/user/register",
-          qs.stringify({
-            username: this.user.username,
-            password: this.user.password,
-            nickName: this.user.nickName,
-          })
-        )
-        .then((response) => {
-          if (response.data.code == -1) {
-            this.msg = response.data.msg;
-          } else {
-            this.registerText = response.data.msg;
-            this.isRegister = true;
-            setTimeout(() => {
-              this.isRegister = false;
-            }, 500);
-          }
-          this.user.username = "";
-          this.user.password = "";
-          this.user.nickName = "";
-        });
+      const { data: res } = await User.register(qs.stringify({
+          username: this.user.username,
+          password: this.user.password,
+          nickName: this.user.nickName
+        }));
+      if (res.code == -1) {
+        this.msg = res.msg;
+      } else {
+        this.registerText = res.msg;
+        this.isRegister = true;
+        setTimeout(() => {
+          this.isRegister = false;
+        }, 500);
+      }
+      this.user.username = "";
+      this.user.password = "";
+      this.user.nickName = "";
       this.msg = "";
     },
     goRegister() {
@@ -213,7 +178,8 @@ export default {
   position: absolute;
   left: 50%;
   top: 40%;
-  transform: translate(-50%, -50%); /* 50%为自身尺寸的一半 */
+  transform: translate(-50%, -50%);
+  /* 50%为自身尺寸的一半 */
   width: 80%;
   display: inline-block;
   height: 0.625rem;
@@ -286,6 +252,7 @@ export default {
   background-color: #ffffff;
   opacity: 0.6;
 }
+
 .login .sm_header {
   width: 1.5rem;
   margin-left: 2rem;
@@ -299,6 +266,7 @@ export default {
   font-size: 0.625rem;
   color: #000;
 }
+
 .login .left img {
   width: 2rem;
   height: 2rem;
