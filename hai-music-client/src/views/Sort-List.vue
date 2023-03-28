@@ -3,27 +3,15 @@
     <div class="box" id="box">
       <div class="top">
         <div>
-          <span>分类</span
-          ><a
-            :class="mvNavIndex == -1 ? 'tab-active' : ''"
-            @click.prevent="changeNav(-1)"
-            >全部</a
-          >
-          <a
-            v-for="(item, index) in mvNav"
-            :key="index"
-            @click.prevent="changeNav(index)"
-            :class="mvNavIndex == index ? 'tab-active' : ''"
-            >{{ item }}</a
-          >
+          <span>分类</span><a :class="mvNavIndex == -1 ? 'tab-active' : ''" @click.prevent="changeNav(-1)">全部</a>
+          <a v-for="(item, index) in mvNav" :key="index" @click.prevent="changeNav(index)"
+            :class="mvNavIndex == index ? 'tab-active' : ''">{{ item }}</a>
         </div>
       </div>
       <div class="header">{{ headerText }}</div>
       <div class="container">
         <div v-for="item in filterGdList" :key="item.id">
-          <a @click.prevent="goGdDetails(item.id)"
-            ><img :src="item.pic" alt="歌单推荐"
-          /></a>
+          <a @click.prevent="goGdDetails(item.id)"><img :src="item.pic" alt="歌单推荐" /></a>
           <a @click.prevent="goGdDetails(item.id)">
             <p>{{ item.title }}</p>
           </a>
@@ -33,12 +21,13 @@
           本栏目暂时还没有歌单
         </div>
       </div>
-      <hai-drop-down-loading @click.native="obtainGdPageInfoNext" v-show="filterGdList.length != 0"/>
+      <hai-drop-down-loading @click.native="obtainGdPageInfoNext" v-show="filterGdList.length != 0" />
     </div>
   </div>
 </template>
 <script>
 import HaiDropDownLoading from "../components/common/HaiDropDownLoading.vue";
+import SongSheet from "@/api/SongSheet";
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: "SortList",
@@ -65,24 +54,15 @@ export default {
         },
       });
     },
-    obtainGdPageInfo(pageNum = 1, style = "") {
-      this.axios
-        .get("/song_sheet/page", {
-          params: {
-            pageNum: pageNum,
-            num: 12,
-            style: style,
-          },
-        })
-        .then((response) => {
-          if (response.data.code == 1) {
-            this.current = response.data.data.current;
-            this.pages = response.data.data.pages;
-            this.gdList = [...this.gdList, ...response.data.data.records];
-            this.filterGdList = this.gdList;
-            this.changePx();
-          }
-        });
+    async obtainGdPageInfo(pageNum = 1, style = "") {
+      const { data: res } = await SongSheet.getSongSheetPageByStyle(pageNum, 12, style);
+      if (res.code == 1) {
+        this.current = res.data.current;
+        this.pages = res.data.pages;
+        this.gdList = [...this.gdList, ...res.data.records];
+        this.filterGdList = this.gdList;
+        this.changePx();
+      }
     },
     changePx() {
       this.filterGdList.sort(function (a, b) {
@@ -125,7 +105,8 @@ export default {
   margin: auto;
   padding-top: 0.625rem;
   padding-bottom: 0.375rem;
-    background-color: #f9f9f9;
+  background-color: #f9f9f9;
+
   .top {
     width: 98%;
     height: 3rem;
@@ -133,10 +114,12 @@ export default {
     border-radius: 0.1rem;
     background-color: white;
     padding-top: 0.375rem;
+
     div {
       width: 100%;
       height: 1rem;
       line-height: 1rem;
+
       span {
         display: inline-block;
         width: 1rem;
@@ -150,6 +133,7 @@ export default {
         font-weight: bolder;
         color: #000;
       }
+
       a {
         display: inline-block;
         width: 1rem;
@@ -163,12 +147,14 @@ export default {
         margin: auto 0.0625rem auto 0.0625rem;
         border-radius: 0.05rem;
       }
+
       a:hover {
         color: #000;
         background-color: #e35555;
       }
     }
   }
+
   .header {
     width: 98%;
     height: 1.25rem;
@@ -179,6 +165,7 @@ export default {
     border-bottom: 0.0125rem solid #c20c0c;
     color: #000;
   }
+
   .container {
     display: flex;
     flex-wrap: wrap;
@@ -190,13 +177,16 @@ export default {
     padding-left: 0.175rem;
     background-color: white;
     border-radius: 0.05rem;
+
     div {
       width: 5.75rem;
       margin: 0.125rem;
       margin-bottom: 0.25rem;
+
       a {
         display: block;
       }
+
       img {
         width: 100%;
         height: 3.75rem;
@@ -205,6 +195,7 @@ export default {
         overflow: hidden;
         transition: all 0.3s ease-in;
       }
+
       img:hover {
         opacity: 0.8;
       }

@@ -7,7 +7,7 @@ import router from '@/router';
 
 // 创建请求实例
 const instance = axios.create({
-  baseURL: 'http://127.0.0.1:8081',
+  baseURL: 'http://127.0.0.1:8081/api',
   // 指定请求超时的毫秒数
   timeout: 5000,
   // 表示跨域请求时是否需要使用凭证

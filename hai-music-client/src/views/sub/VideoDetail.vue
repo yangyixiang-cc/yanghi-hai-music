@@ -77,6 +77,7 @@
 import Comment from "@/components/common/Comment.vue";
 import HaiList from "@/components/common/HaiList.vue";
 import { mapState, mapMutations } from "vuex";
+import Video from "@/api/Video";
 export default {
   name: "VideoDetail",
   components: { Comment, HaiList },
@@ -113,7 +114,7 @@ export default {
       });
     },
     async obtainVideoInfo() {
-      const { data: res } = await this.axios.get("/video/" + this.videoId);
+      const { data: res } = await Video.getVideoById(this.videoId);
       if (res.code == 1) {
         this.singerInfo = res.data.singer;
         this.videoInfo = res.data.video;
@@ -127,13 +128,7 @@ export default {
       let flog = args.flog;
       if (pageNum != -1 && this.requestNum.indexOf(pageNum) == -1 && !flog) {
         this.requestNum.push(pageNum);
-        const { data: res } = await this.axios.get("/video/comments", {
-          params: {
-            id: this.videoId,
-            pageNum: pageNum,
-            num: 5,
-          },
-        });
+        const { data: res } = await Video.getCommentsPageByVideoId(this.videoId, pageNum, 5);
         if (res.code == 1) {
           if (this.commentsPageInfo.length == 0) {
             this.commentsPageInfo = res.data;
@@ -158,13 +153,7 @@ export default {
           size: obj.size,
         });
       } else if (pageNum == -1 && flog) {
-        const { data: res } = await this.axios.get("/video/comments", {
-          params: {
-            id: this.videoId,
-            pageNum: 1,
-            num: 5,
-          },
-        });
+        const { data: res } = await Video.getCommentsPageByVideoId(this.videoId, 1, 5);
         if (res.code == 1) {
           this.commentsPageInfo = res.data;
           this.requestNum = [];
@@ -172,12 +161,7 @@ export default {
       }
     },
     async recommendVideo() {
-      const { data: res } = await this.axios.get("/video/recommend/style", {
-        params: {
-          num: 3,
-          style: this.style,
-        },
-      });
+      const { data: res } = await Video.getRecommendVideosByStyle(3, this.style);
       if (res.code == 1) {
         this.recommendList = res.data;
       }

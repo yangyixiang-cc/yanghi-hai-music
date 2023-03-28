@@ -36,6 +36,7 @@
 <script>
 import HaiDropDownLoading from "../components/common/HaiDropDownLoading.vue";
 import HaiSingerCard from "@/components/common/HaiSingerCard.vue";
+import Singer from "@/api/Singer";
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: "SingerList",
@@ -64,44 +65,30 @@ export default {
     },
   },
   methods: {
-    obtainSingerPageInfo(pageNum = 1) {
-      this.axios
-        .get("/singer/page", {
-          params: {
-            pageNum: pageNum,
-            num: 20,
-          },
-        })
-        .then((response) => {
-          if (response.data.code == 1) {
-            this.current = response.data.data.current;
-            this.pages = response.data.data.pages;
-            this.singerList = [
-              ...this.singerList,
-              ...response.data.data.records,
-            ];
-          }
-        });
+    async obtainSingerPageInfo(pageNum = 1) {
+      const { data:res } = await Singer.getSingerPage(pageNum, 20);
+      if(res.code == 1){
+        this.current = res.data.current;
+        this.pages = res.data.pages;
+        this.singerList = [
+          ...this.singerList,
+          ...res.data.records
+        ]
+      }
+
     },
     obtainSingerPageInfoNext() {
       if (this.current < this.pages) {
         this.obtainSingerPageInfo(this.current + 1);
       }
     },
-    goSearchSinger() {
+    async goSearchSinger() {
       if (this.keyword == "") return;
-      this.axios
-        .get("/singer/search", {
-          params: {
-            keyword: this.keyword,
-          },
-        })
-        .then((response) => {
-          if (response.data.code == 1) {
-            this.singerList = response.data.data;
-          }
-        });
-    },
+      const {data: res} = await Singer.searchSingerByKeyword(this.keyword);
+      if(res.code == 1){
+        this.singerList = res.data;
+      }
+    }
   },
   mounted() {
     this.obtainSingerPageInfo();
