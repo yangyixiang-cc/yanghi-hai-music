@@ -10,17 +10,21 @@ spring:
         enabled: true
   # 配置redis
   redis:
-    host: 192.168.0.103 #Redis服务器地址
-    password: 410327
+    host: 127.0.0.1 #Redis服务器地址
     port: 6379 #Redis服务器连接端口
     database: 0   #Redis数据库索引（默认为0）
-    timeout: 1800000  #连接超时时间（毫秒）
+    timeout: 10000  #连接超时时间（毫秒）
     lettuce:
       pool:
         max-active: 20  #连接池最大连接数（使用负值表示没有限制）
         max-idle: 5  #连接池中的最大空闲连接
         min-idle: 0  #连接池中的最小空闲连接
         max-wait: -1 #最大阻塞等待时间(负数表示没限制)
+  elasticsearch:
+    uris: http://81.68.127.141:9200
+    username: elastic
+    password: yangyihi2001
+
 
 #配置mybatis
 mybatis-plus:
@@ -53,7 +57,6 @@ management:
       enabled: true # 单独开启info端点
     metrics:
       enabled: true # 单独开启指标端点
-
 
 server:
   port: 8081
