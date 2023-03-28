@@ -194,7 +194,7 @@ export default {
       this.followTabStyle[index - 1]["active-btn-color"] = true;
     },
     async getUserDetail() {
-      const { data: res } = User.getUserDetailsById(this.user.id);
+      const {data: res} = await User.getUserDetailsById(this.user.id);
       if (res.code == -1) {
         console.log(res.msg);
       } else {
