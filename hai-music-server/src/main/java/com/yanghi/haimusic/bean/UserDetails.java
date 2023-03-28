@@ -3,10 +3,7 @@ package com.yanghi.haimusic.bean;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
@@ -17,6 +14,7 @@ import java.util.Date;
  */
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
@@ -53,5 +51,5 @@ public class UserDetails implements Serializable {
 
     private int followVolume; //用户关注量
 
-    private Integer userId = null; //对应的用户id
+    private int userId; //对应的用户id
 }
