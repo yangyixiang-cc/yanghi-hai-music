@@ -17,6 +17,18 @@ export default class User {
         return get('/user/' + id);
     }
 
+
+    /**
+     * 根据用户ID获取详细信息
+     * @param {Number} userId 
+     * @returns 
+     */
+    static async getUserDetailsById(userId){
+        return get("/user/userDetails",{
+            userId
+        });
+    }
+
     /**
      * 登录
      * @param {String} username 
@@ -36,7 +48,5 @@ export default class User {
     static async register(data){
         return post("/user/register", data);
     }
-
-   
 
 }

@@ -8,8 +8,7 @@
         <div class="right">
           <div class="singer_name">{{ user.nickName }}</div>
           <div class="tab">
-            <a href="#">关注 {{ userDetails.followVolume }}</a
-            >|
+            <a href="#">关注 {{ userDetails.followVolume }}</a>|
             <a href="#">粉丝 {{ userDetails.supportVolume }}</a>
           </div>
         </div>
@@ -32,12 +31,8 @@
         <div class="tab_context">
           <div class="context" v-show="preIndex == 1">
             <div class="d_top">
-              <a @click.prevent="changeSubTab(1)" :class="subTabStyle[0]"
-                >歌曲</a
-              >
-              <a @click.prevent="changeSubTab(2)" :class="subTabStyle[1]"
-                >歌单</a
-              >
+              <a @click.prevent="changeSubTab(1)" :class="subTabStyle[0]">歌曲</a>
+              <a @click.prevent="changeSubTab(2)" :class="subTabStyle[1]">歌单</a>
               <a @click.prevent="changeSubTab(3)" :class="subTabStyle[2]">MV</a>
             </div>
             <div class="d_context">
@@ -46,21 +41,13 @@
               </div>
               <div class="list" v-show="subIndex == 2">
                 <div class="box">
-                  <hai-my-card
-                    v-for="item in myLikeSongSheetList"
-                    :key="item.id"
-                    :card="item"
-                  ></hai-my-card>
+                  <hai-my-card v-for="item in myLikeSongSheetList" :key="item.id" :card="item"></hai-my-card>
                 </div>
                 <hai-pagination></hai-pagination>
               </div>
               <div class="list" v-show="subIndex == 3">
                 <div class="box">
-                  <hai-my-card
-                    v-for="item in myLikeMvList"
-                    :key="item.id"
-                    :card="item"
-                  ></hai-my-card>
+                  <hai-my-card v-for="item in myLikeMvList" :key="item.id" :card="item"></hai-my-card>
                 </div>
                 <hai-pagination></hai-pagination>
               </div>
@@ -73,56 +60,32 @@
               <button class="fa fa-share">分享歌单</button>
             </div>
             <div class="bot">
-              <hai-my-card
-                v-for="item in myCreateSongSheetList"
-                :key="item.id"
-                :card="item"
-              ></hai-my-card>
+              <hai-my-card v-for="item in myCreateSongSheetList" :key="item.id" :card="item"></hai-my-card>
             </div>
           </div>
           <div class="context" v-show="preIndex == 3">
             <div class="header">
-              <button
-                @click.prevent="changeFollowTab(1)"
-                :class="followTabStyle[0]"
-              >
+              <button @click.prevent="changeFollowTab(1)" :class="followTabStyle[0]">
                 歌手
               </button>
-              <button
-                @click.prevent="changeFollowTab(2)"
-                :class="followTabStyle[1]"
-              >
+              <button @click.prevent="changeFollowTab(2)" :class="followTabStyle[1]">
                 用户
               </button>
             </div>
             <div class="bot" id="bot" v-show="followIndex == 1">
-              <hai-singer-card
-                v-for="item in myFollowSingerList"
-                :key="item.id"
-                :singer="item"
-              ></hai-singer-card>
+              <hai-singer-card v-for="item in myFollowSingerList" :key="item.id" :singer="item"></hai-singer-card>
             </div>
             <div class="bot" id="bot" v-show="followIndex == 2">
-              <hai-singer-card
-                v-for="item in myFollowUserList"
-                :key="item.id"
-                :singer="item"
-              ></hai-singer-card>
+              <hai-singer-card v-for="item in myFollowUserList" :key="item.id" :singer="item"></hai-singer-card>
             </div>
-            <hai-pagination
-              v-if="
-                (followIndex == 1 && myFollowSingerList.length >= 8) ||
-                (followIndex == 2 && myFollowUserList.length >= 8)
-              "
-            ></hai-pagination>
+            <hai-pagination v-if="
+              (followIndex == 1 && myFollowSingerList.length >= 8) ||
+              (followIndex == 2 && myFollowUserList.length >= 8)
+            "></hai-pagination>
           </div>
           <div class="context" v-show="preIndex == 4">
             <div class="bot">
-              <hai-singer-card
-                v-for="item in myFansList"
-                :key="item.id"
-                :singer="item"
-              ></hai-singer-card>
+              <hai-singer-card v-for="item in myFansList" :key="item.id" :singer="item"></hai-singer-card>
             </div>
             <hai-pagination></hai-pagination>
           </div>
@@ -138,6 +101,7 @@ import HaiPagination from "@/components/common/HaiPagination.vue";
 import HaiMyCard from "@/components/common/HaiMyCard.vue";
 import HaiSingerCard from "@/components/common/HaiSingerCard.vue";
 import { mapState, mapMutations } from "vuex";
+import User from "@/api/User";
 export default {
   name: "MyMusic",
   components: {
@@ -229,24 +193,20 @@ export default {
       });
       this.followTabStyle[index - 1]["active-btn-color"] = true;
     },
+    async getUserDetail() {
+      const { data: res } = User.getUserDetailsById(this.user.id);
+      if (res.code == -1) {
+        console.log(res.msg);
+      } else {
+        this.saveUserDetails(res.data);
+      }
+    }
   },
   computed: {
     ...mapState("userOptions", ["user", "userDetails"]),
   },
-  mounted() {
-    this.axios
-      .get("/user/userDetails", {
-        params: {
-          userId: this.user.id,
-        },
-      })
-      .then((response) => {
-        if (response.data.code == -1) {
-          console.log(response.data.msg);
-        } else {
-          this.saveUserDetails(response.data.data);
-        }
-      });
+  async mounted() {
+    await this.getUserDetail();
   },
 };
 </script>
@@ -288,44 +248,44 @@ export default {
   border-bottom: 0.0125rem solid #c20c0c;
 }
 
-.main_box .box .top > .left {
+.main_box .box .top>.left {
   flex: 2;
   padding-left: 1rem;
 }
 
-.main_box .box .top > .left img {
+.main_box .box .top>.left img {
   width: 3.75rem;
   height: 3.75rem;
   border-radius: 50%;
 }
 
-.main_box .box .top > .right {
+.main_box .box .top>.right {
   flex: 8;
   padding-left: 0.625rem;
 }
 
-.main_box .box .top > .right div {
+.main_box .box .top>.right div {
   width: 100%;
   height: 1rem;
   line-height: 1rem;
   font-size: 0.2rem;
 }
 
-.main_box .box .top > .right .singer_name {
+.main_box .box .top>.right .singer_name {
   font-size: 0.45rem;
   color: #000;
   font-weight: bold;
   margin-top: 0.625rem;
 }
 
-.main_box .box .top > .right .tab a {
+.main_box .box .top>.right .tab a {
   display: inline-block;
   width: 1.25rem;
   text-align: center;
   font-size: 0.25rem;
 }
 
-.main_box .box .top > .right .tab a:first-child {
+.main_box .box .top>.right .tab a:first-child {
   text-align: left;
 }
 
@@ -377,14 +337,7 @@ export default {
   width: 100%;
 }
 
-.main_box
-  .box
-  .middle
-  .tab_context
-  .context:nth-child(1)
-  .d_context
-  .list
-  .box {
+.main_box .box .middle .tab_context .context:nth-child(1) .d_context .list .box {
   display: flex;
   flex-wrap: wrap;
   margin-bottom: 0.375rem;

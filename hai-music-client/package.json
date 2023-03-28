@@ -15,7 +15,6 @@
     "element-ui": "^2.15.8",
     "font-awesome": "^4.7.0",
     "swiper": "^8.1.4",
-    "vue-axios": "^3.4.1",
     "vuex": "^3.6.2"
   },
   "devDependencies": {
