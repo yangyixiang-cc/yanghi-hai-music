@@ -1,8 +1,8 @@
 export default {
     namespaced: true,
     state: {
-        user:JSON.parse(localStorage.getItem("user")||'{}'),
-        userDetails:JSON.parse(localStorage.getItem("userDetails")||'{}')
+        user: JSON.parse(localStorage.getItem("user")||'{}'),
+        userDetails: JSON.parse(localStorage.getItem("userDetails")||'{}')
     },
     actions:{
 
