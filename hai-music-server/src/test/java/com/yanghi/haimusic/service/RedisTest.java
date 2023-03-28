@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import java.time.Duration;
+
 
 @SpringBootTest
 public class RedisTest {
@@ -16,7 +18,7 @@ public class RedisTest {
 
     @Test
     public void test(){
-        redisTemplate.opsForValue().set("redis","hello");
+        redisTemplate.opsForValue().set("redis", "hello", Duration.ofMinutes(1L));
         Object redis = redisTemplate.opsForValue().get("redis");
         System.out.println(redis.toString());
     }
