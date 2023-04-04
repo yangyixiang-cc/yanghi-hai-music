@@ -29,7 +29,9 @@ public class CommentController {
      * @return
      */
     @PostMapping("/user")
-    public Result saveCommentsByUser(@Validated Comments comments){
+    public Result saveCommentsByUser(@Valid Comments comments){
         return commentsService.saveUserOneComments(comments);
     }
+
+
 }

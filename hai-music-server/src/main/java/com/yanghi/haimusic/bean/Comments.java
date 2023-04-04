@@ -83,5 +83,5 @@ public class Comments implements Serializable {
     //评论的类型 1 歌曲 2 歌单 3 MV
 
     @AllowedValuesConstraint
-    private int type;
+    private Integer type;
 }
