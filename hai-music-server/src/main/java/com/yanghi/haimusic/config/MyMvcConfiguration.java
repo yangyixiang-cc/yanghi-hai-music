@@ -4,7 +4,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Configuration //标注了@Configuration的类会自动注入到Spring容器中
+//标注了@Configuration的类会自动注入到Spring容器中
+@Configuration
 public class MyMvcConfiguration implements WebMvcConfigurer {
 
 

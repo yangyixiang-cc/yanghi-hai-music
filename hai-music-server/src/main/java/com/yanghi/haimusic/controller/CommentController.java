@@ -3,26 +3,33 @@ package com.yanghi.haimusic.controller;
 import com.yanghi.haimusic.bean.Comments;
 import com.yanghi.haimusic.service.CommentsService;
 import com.yanghi.haimusic.utils.Result;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
+import javax.validation.Valid;
+
+/**
+ * 评论类
+ * @author 泗安
+ */
 @RestController
 @RequestMapping("/api/comments")
+@Validated
 public class CommentController {
 
-    @Autowired
-    CommentsService commentsService;
+    @Resource(name = "commentsServiceImpl")
+    private CommentsService commentsService;
 
-    //接收用户发送的评论存储到数据库中
+    /**
+     * 接收用户发送的评论存储到数据库中
+     * @param comments
+     * @return
+     */
     @PostMapping("/user")
-    public Result saveCommentsByUser(Comments comments){
-        boolean b = commentsService.save(comments);
-        if (!b){
-            return Result.failed("数据存储失败！");
-        }
-        return Result.ok();
+    public Result saveCommentsByUser(@Validated Comments comments){
+        return commentsService.saveUserOneComments(comments);
     }
 }

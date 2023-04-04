@@ -20,13 +20,23 @@ import java.io.Serializable;
 @TableName("admin")
 public class Admin implements Serializable {
 
+    //主键
+
     @TableId(value = "id",type = IdType.AUTO)
-    private int id; //主键
+    private int id;
 
-    private String username; //用户名
+    //用户名
 
-    private String password; //密码
+    private String username;
+
+    //密码
+
+    private String password;
+
+
+    //状态
 
     @TableLogic(value = "1",delval = "0")
-    private int status = 1; //状态
+    private int status = 1;
+
 }
