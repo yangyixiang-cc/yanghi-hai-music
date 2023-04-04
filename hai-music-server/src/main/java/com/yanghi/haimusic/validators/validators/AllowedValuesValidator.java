@@ -6,6 +6,9 @@ import com.yanghi.haimusic.validators.constant.CommentTypeEnum;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+/**
+ * @author 泗安
+ */
 public class AllowedValuesValidator implements ConstraintValidator<AllowedValuesConstraint, Integer> {
 
     @Override
@@ -16,7 +19,7 @@ public class AllowedValuesValidator implements ConstraintValidator<AllowedValues
     @Override
     public boolean isValid(Integer value, ConstraintValidatorContext context) {
         if (value == null) {
-            return true;
+            return false;
         }
         for (CommentTypeEnum allowedValue : CommentTypeEnum.values()) {
             if (allowedValue.getValue() == value) {
