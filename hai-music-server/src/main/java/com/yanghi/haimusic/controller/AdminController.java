@@ -3,36 +3,39 @@ package com.yanghi.haimusic.controller;
 import com.yanghi.haimusic.bean.Admin;
 import com.yanghi.haimusic.service.AdminService;
 import com.yanghi.haimusic.utils.Result;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
  * @author 泗安
+ * 明确职责：controller 只进行参数校验和调用service层方法
  */
 @RestController
 @RequestMapping("/api/admin")
+@Validated
 public class AdminController {
 
-    @Autowired
-    AdminService adminService;
-
+    @Resource(name = "adminServiceImpl")
+    private AdminService adminService;
 
     /**
      * 返回指定管理员信息
      */
-    @PostMapping("/{id}")
-    public Result<Admin> returnAdminInfoById(@PathVariable("id") int id){
-        Admin admin = adminService.getById(id);
-        Result<Admin> result = Result.ok(admin);
-        return result;
+    @GetMapping("/{id}")
+    public Result<Admin> returnAdminInfoById(@PathVariable("id") @NotNull(message = "用户名不能为空") Integer id){
+        return adminService.getAdminById(id);
     }
 
-    //返回全部的管理员信息
+    /**
+     * 返回全局的管理员信息
+     * @return
+     */
     @GetMapping("/")
     public Result<List<Admin>> returnAllAdminInfo(){
-        List<Admin> admins = adminService.list();
-        Result<List<Admin>> listResult = Result.ok(admins);
-        return listResult;
+        return adminService.getAllAdmin();
     }
 }
