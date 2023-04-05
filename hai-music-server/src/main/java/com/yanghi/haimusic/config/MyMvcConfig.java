@@ -2,11 +2,11 @@ package com.yanghi.haimusic.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-//标注了@Configuration的类会自动注入到Spring容器中
 @Configuration
-public class MyMvcConfiguration implements WebMvcConfigurer {
+public class MyMvcConfig implements WebMvcConfigurer {
 
 
     @Override
@@ -17,5 +17,12 @@ public class MyMvcConfiguration implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST", "DELETE", "PUT") //设置允许的请求方式
                 .allowedHeaders("*") //设置允许的header属性 *所有
                 .maxAge(3600); //设置跨域允许时间
+    }
+
+    //增加访问路径
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/img/**").addResourceLocations("classpath:/static/img/");
+        registry.addResourceHandler("/song/**").addResourceLocations("classpath:/static/song/");
     }
 }

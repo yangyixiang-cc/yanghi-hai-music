@@ -12,6 +12,7 @@ import com.yanghi.haimusic.mapper.SingerMapper;
 import com.yanghi.haimusic.mapper.SongMapper;
 import com.yanghi.haimusic.mapper.UserMapper;
 import com.yanghi.haimusic.service.SongService;
+import com.yanghi.haimusic.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,8 +22,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author 泗安
+ */
 @Service
-@Transactional
 public class SongServiceImpl extends ServiceImpl<SongMapper, Song> implements SongService {
 
     @Autowired
@@ -37,8 +40,30 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song> implements So
     @Autowired
     private SongMapper songMapper;
 
+    @Transactional(readOnly = true)
     @Override
-    public List<Map<String, Object>> returnCommentsPageBySongId(Integer id, Integer pageNum, Integer num) {
+    public Result getSongById(Integer id) {
+        Song songServiceById = this.getById(id);
+        if(songServiceById == null){
+            return Result.failed("数据获取失败！");
+        }
+        return Result.ok(songServiceById);
+    }
+
+    @Override
+    public Result getRecommendSongInfo() {
+        QueryWrapper<Song> singerQueryWrapper = new QueryWrapper<>();
+        singerQueryWrapper.le("id",8);
+        List<Song> songList = this.list(singerQueryWrapper);
+        if(songList.isEmpty()){
+            return Result.failed("数据获取失败");
+        }
+        return Result.ok(songList);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Result returnCommentsPageBySongId(Integer id, Integer pageNum, Integer num) {
         List<Map<String, Object>> mapList = new ArrayList<>();
         Page<Comments> commentsPage = new Page<>(pageNum,num);
         QueryWrapper<Comments> commentsQueryWrapper = new QueryWrapper<>();
@@ -66,16 +91,23 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song> implements So
         pageMap.put("pages",commentsPage1.getPages());
         pageMap.put("size",commentsPage1.getSize());
         mapList.add(pageMap);
-        return mapList;
+        if(mapList.isEmpty()){
+            return Result.failed("数据为空");
+        }
+        return Result.ok(mapList);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Page<Song> selectSongPageBySingerId(Integer id, Integer pageNum, Integer num) {
+    public Result selectSongPageBySingerId(Integer id, Integer pageNum, Integer num) {
         Page<Song> page = new Page<>(pageNum,num);
         QueryWrapper<Song> songQueryWrapper = new QueryWrapper<>();
         songQueryWrapper.select("id","name","introduction","pic","singer_name","singer_id","url").eq("singer_id",id);
         Page<Song> songPage = songMapper.selectPage(page, songQueryWrapper);
-        return songPage;
+        if(songPage.getRecords().isEmpty()){
+            return Result.failed("未查找到对应歌手的歌曲信息");
+        }
+        return Result.ok(songPage);
     }
 
     @Override
@@ -102,10 +134,25 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song> implements So
         return this.page(page,songQueryWrapper);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Song> returnSearchSongsByKey(String keyword) {
         QueryWrapper<Song> songQueryWrapper = new QueryWrapper<>();
         songQueryWrapper.select("id","name","pic").like("name",keyword);
         return this.list(songQueryWrapper);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Result getSongRankings(Integer num, String style, String region) {
+        Page<Song> page = null;
+        if(style.isEmpty() && region.isEmpty()){
+            page = this.returnSongPagesByAllPlayVolume(num);
+        }else if(!style.isEmpty() && region.isEmpty()){
+            page = this.returnSongPagesByStyle(num, style);
+        }else if (style.isEmpty() && !region.isEmpty()){
+            page = this.returnSongPagesByRegion(num, region);
+        }
+        return Result.ok(page);
     }
 }

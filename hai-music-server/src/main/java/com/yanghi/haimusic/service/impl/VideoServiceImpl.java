@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@Transactional
 public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements VideoService {
 
     @Autowired
@@ -40,8 +39,9 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
     @Autowired
     private SingerMapper singerMapper;
 
+    @Transactional(readOnly = true)
     @Override
-    public Page<Video> returnVideoPage(Integer pageNum, Integer num,String region,String edition) {
+    public Result returnVideoPage(Integer pageNum, Integer num,String region,String edition) {
         QueryWrapper<Video> videoQueryWrapper = new QueryWrapper<>();
         if(!region.isEmpty() && edition.isEmpty()){
             videoQueryWrapper.like("region",region);
@@ -50,11 +50,12 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
             videoQueryWrapper.like("edition",edition);
         }
         Page<Video> videoPage = new Page<>(pageNum, num);
-        return this.page(videoPage, videoQueryWrapper);
+        return Result.ok(this.page(videoPage, videoQueryWrapper));
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public List<Video> returnVideoRankingsByRegion(Integer num, String region) {
+    public Result returnVideoRankingsByRegion(Integer num, String region) {
         Page<Video> videoPage = new Page<>(1,num);
         QueryWrapper<Video> videoQueryWrapper = new QueryWrapper<>();
         if(region.isEmpty()){
@@ -62,17 +63,19 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         }else{
             videoQueryWrapper.select("id","title","introduction","pic").like("region",region).orderByDesc("play_volume");
         }
-        return this.page(videoPage,videoQueryWrapper).getRecords();
+        return Result.ok(this.page(videoPage,videoQueryWrapper).getRecords());
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public List<Video> returnRecommendVideoInfo() {
+    public Result returnRecommendVideoInfo() {
         Page<Video> videoPage = new Page<>(1,6);
-        return this.page(videoPage).getRecords();
+        return Result.ok(this.page(videoPage).getRecords());
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Map<String, Object> returnVideoInfoAndSingerInfoById(String id) {
+    public Result returnVideoInfoAndSingerInfoById(String id) {
         HashMap<String, Object> stringObjectHashMap = new HashMap<>();
         Video video = this.getById(id);
         stringObjectHashMap.put("video", video);
@@ -83,11 +86,12 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
             flog = false;
         }
         stringObjectHashMap.put("flog",flog);
-        return stringObjectHashMap;
+        return Result.ok(stringObjectHashMap);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public List<Map<String,Object>> returnCommentPageByVideoId(Integer id, Integer pageNum, Integer num) {
+    public Result returnCommentPageByVideoId(Integer id, Integer pageNum, Integer num) {
         List<Map<String, Object>> mapList = new ArrayList<>();
         Page<Comments> commentsPage = new Page<>(pageNum,num);
         QueryWrapper<Comments> commentsQueryWrapper = new QueryWrapper<>();
@@ -115,19 +119,24 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         pageMap.put("pages",commentsPage1.getPages());
         pageMap.put("size",commentsPage1.getSize());
         mapList.add(pageMap);
-        return mapList;
+        if(mapList.isEmpty()){
+            return Result.failed("数据为空");
+        }
+        return Result.ok(mapList);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public List<Video> returnRecommendVideoByStyle(Integer num, String style) {
+    public Result returnRecommendVideoByStyle(Integer num, String style) {
         QueryWrapper<Video> videoQueryWrapper = new QueryWrapper<>();
         if(!style.isEmpty()){
             videoQueryWrapper.like("style",style);
         }
         Page<Video> page = new Page<>(1,num);
-        return this.page(page,videoQueryWrapper).getRecords();
+        return Result.ok(this.page(page,videoQueryWrapper).getRecords());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Video> returnSearchVideosByKey(String keyword) {
         QueryWrapper<Video> videoQueryWrapper = new QueryWrapper<>();

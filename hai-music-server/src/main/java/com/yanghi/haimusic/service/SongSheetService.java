@@ -1,23 +1,32 @@
 package com.yanghi.haimusic.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yanghi.haimusic.bean.SongSheet;
+import com.yanghi.haimusic.utils.Result;
 
 import java.util.List;
-import java.util.Map;
 
 public interface SongSheetService extends IService<SongSheet>{
 
 
+    Result getSongSheetById(Integer id);
+
+    Result getAllSongSheet();
+
+    Result getAllSongSheetTotal();
+
+    Result addSongSheet(SongSheet songSheet);
+
     //获取指定id对应的评论信息
-    List<Map<String,Object>> returnCommentsPageBySongSheetId(Integer id,Integer pageNum, Integer num);
+    Result returnCommentsPageBySongSheetId(Integer id,Integer pageNum, Integer num);
 
 
     //返回首页歌单推荐数据
-    List<SongSheet> returnRecommendSongSheetInfo();
+    Result returnRecommendSongSheetInfo();
 
-    Page<SongSheet> returnSongSheetPageInfo(Integer pageNum, Integer num,String style);
+    Result returnSongSheetPageInfo(Integer pageNum, Integer num,String style);
+
+    Result getCommentsCountBySongSheetId(Integer id);
 
     List<SongSheet> returnSearchSongSheetsByKey(String keyword);
 }
