@@ -26,7 +26,7 @@ import java.util.Date;
 @EqualsAndHashCode
 @ToString
 @TableName("comments")
-@OnlyOneField(fields = {"songId", "songSheetId", "videoId"},message = "songId songSheetId videoId 只能提供一个字段")
+@OnlyOneField(fields = {"songId", "songSheetId", "videoId"},message = "songId songSheetId videoId 必须提供一个字段，且只有一个")
 public class Comments implements Serializable {
 
     @TableId(value = "id", type = IdType.AUTO)

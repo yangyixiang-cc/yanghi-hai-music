@@ -1,53 +1,34 @@
 package com.yanghi.haimusic.controller;
 
-import com.yanghi.haimusic.bean.Singer;
-import com.yanghi.haimusic.bean.Song;
-import com.yanghi.haimusic.bean.SongSheet;
-import com.yanghi.haimusic.bean.Video;
-import com.yanghi.haimusic.service.SingerService;
-import com.yanghi.haimusic.service.SongService;
-import com.yanghi.haimusic.service.SongSheetService;
-import com.yanghi.haimusic.service.VideoService;
+import com.yanghi.haimusic.service.CommonService;
 import com.yanghi.haimusic.utils.Result;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.List;
+import javax.annotation.Resource;
+import javax.validation.constraints.NotBlank;
+
 import java.util.Map;
 
+/**
+ * 复合控制器
+ * @author 泗安
+ */
 @RestController
 @RequestMapping("/api/common")
+@Validated
 public class CommonController {
 
-    @Autowired
-    SongService songService;
-
-    @Autowired
-    SongSheetService songSheetService;
-
-    @Autowired
-    VideoService videoService;
-
-    @Autowired
-    SingerService singerService;
+    @Resource(name = "commonServiceImpl")
+    private CommonService commonService;
 
     @GetMapping("/search")
-    public Result returnSearchResult(
-            @RequestParam("keyword") String keyword
+    public Result<Map<String, Object>> returnSearchResult(
+            @NotBlank(message = "搜索关键词不能为空") @RequestParam("keyword") String keyword
     ){
-        Map<String,Object> map = new HashMap<>();
-        List<Song> songs = songService.returnSearchSongsByKey(keyword);
-        List<SongSheet> songSheets = songSheetService.returnSearchSongSheetsByKey(keyword);
-        List<Singer> singers = singerService.returnSearchSingersByKey(keyword);
-        List<Video> videos = videoService.returnSearchVideosByKey(keyword);
-        map.put("songs",songs);
-        map.put("songSheets",songSheets);
-        map.put("singers",singers);
-        map.put("videos",videos);
-        return Result.ok(map);
+       return commonService.getSearchSongAndSongSheetAndSingerAndVideoResultByKeyword(keyword);
     }
 }

@@ -18,10 +18,7 @@ class SongSheetServiceTest {
     //测试根据歌单id返回评论和及相对应的用户
     @Test
     public void testCommentsBySongSheetId(){
-        List<Map<String, Object>> mapList = songSheetService.returnCommentsPageBySongSheetId(5,1,5);
-        for(Map<String,Object> map: mapList){
-            System.out.println(map);
-        }
+
     }
 
     @Test

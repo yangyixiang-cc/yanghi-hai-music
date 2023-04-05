@@ -2,19 +2,25 @@ package com.yanghi.haimusic.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.yanghi.haimusic.bean.Singer;
 import com.yanghi.haimusic.bean.Song;
+import com.yanghi.haimusic.utils.Result;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.Map;
 
 public interface SongService extends IService<Song> {
 
+
+    Result getSongById(Integer id);
+
+    Result getRecommendSongInfo();
+
+
     //获取指定id对应的评论信息
-    List<Map<String,Object>> returnCommentsPageBySongId(Integer id, Integer pageNum, Integer num);
+    Result returnCommentsPageBySongId(Integer id, Integer pageNum, Integer num);
 
     //根据歌手id返回歌曲分页数据 默认 1  1  6
-    Page<Song> selectSongPageBySingerId(Integer id, Integer pageNum, Integer num);
+    Result selectSongPageBySingerId(Integer id, Integer pageNum, Integer num);
 
     //根据曲风 style 返回对应的歌曲排行榜 默认获取前20条
     Page<Song> returnSongPagesByStyle(Integer num,String style);
@@ -26,4 +32,6 @@ public interface SongService extends IService<Song> {
     Page<Song> returnSongPagesByAllPlayVolume(Integer num);
 
     List<Song> returnSearchSongsByKey(String keyword);
+
+    Result getSongRankings(Integer num, String style, String region);
 }

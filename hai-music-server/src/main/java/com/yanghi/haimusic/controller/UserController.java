@@ -10,15 +10,20 @@ import com.yanghi.haimusic.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 
+
+/**
+ * @author 泗安
+ */
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
 
-    @Autowired
+    @Resource(name = "userServiceImpl")
     private UserService userService;
 
-    @Autowired
+    @Resource(name = "userDetailsServiceImpl")
     private UserDetailsService userDetailsService;
 
     //登录方法
